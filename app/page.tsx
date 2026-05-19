@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Harga Paket
 const PAKET_WISATA = {
   "Bali Explorer 5D4N": 4500000,
   "Raja Ampat Trip Luxury": 22500000,
@@ -13,6 +14,7 @@ const PAKET_WISATA = {
 
 type Status = "Menunggu" | "Dikonfirmasi" | "Selesai" | "Dibatalkan";
 
+// Interface
 interface Booking {
   id: number;
   namaPemesan: string;
@@ -27,7 +29,7 @@ interface Booking {
 }
 
 export default function Page() {
-  // --- State Management
+  // --- STATE MANAGEMENT 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,7 +126,7 @@ export default function Page() {
       const url = modalMode === "add" ? API_URL : `${API_URL}/${formData.id}`;
       const method = modalMode === "add" ? "POST" : "PUT";
 
-      // @ts-ignore - Mengabaikan peringatan URL jika string undefined
+      // @ts-ignore
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -223,7 +225,7 @@ export default function Page() {
       </header>
 
       <main className="ml-64 pt-24 px-8 pb-12 min-h-screen bg-background">
-        <div className="max-w-[1400px] mx-auto space-y-8">
+        <div className="max-w-350 mx-auto space-y-8">
 
           <div className="flex justify-between items-end">
             <div>
@@ -274,7 +276,7 @@ export default function Page() {
               </button>
             </div>
 
-            <div className="overflow-x-auto min-h-[300px]">
+            <div className="overflow-x-auto min-h-75">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-surface-container-low/50">
@@ -345,66 +347,69 @@ export default function Page() {
 
       {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-on-background/40 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="px-8 py-6 border-b border-outline-variant flex justify-between items-center">
+
+          <div className="relative w-full max-w-xl bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
               <div>
                 <h3 className="font-headline-md text-on-background">{modalMode === 'add' ? 'Tambah Pemesanan' : 'Edit Pemesanan'}</h3>
               </div>
-              <button className="text-outline hover:text-primary" onClick={closeModal}><span className="material-symbols-outlined">close</span></button>
+              <button className="text-outline hover:text-primary transition-colors" onClick={closeModal}>
+                <span className="material-symbols-outlined text-[24px]">close</span>
+              </button>
             </div>
 
-            <form className="p-8 space-y-6" onSubmit={submitForm}>
+            <form className="p-6 space-y-5" onSubmit={submitForm}>
               {errorMessage && (
                 <div className="p-3 bg-error-container text-on-error-container text-body-md rounded-lg flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">error</span> {errorMessage}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1 sm:col-span-2">
                   <label className="font-label-md text-on-surface-variant">Nama Pemesan</label>
-                  <input name="namaPemesan" required value={formData.namaPemesan} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary" type="text" />
+                  <input name="namaPemesan" required value={formData.namaPemesan} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md" type="text" placeholder="Masukkan nama lengkap" />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-label-md text-on-surface-variant">Nomor Kontak</label>
-                  <input name="kontak" required value={formData.kontak} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary" type="text" />
+                  <input name="kontak" required value={formData.kontak} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md" type="text" placeholder="08..." />
                 </div>
 
-                <div className="space-y-1 col-span-2">
+                <div className="space-y-1">
                   <label className="font-label-md text-on-surface-variant">Paket Wisata</label>
-                  <select name="paketWisata" required value={formData.paketWisata} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary">
+                  <select name="paketWisata" required value={formData.paketWisata} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md">
                     <option value="">Pilih paket...</option>
                     {Object.keys(PAKET_WISATA).map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-label-md text-on-surface-variant">Tanggal Keberangkatan</label>
-                  <input name="tanggalBerangkat" required value={formData.tanggalBerangkat} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary" type="date" />
+                  <label className="font-label-md text-on-surface-variant">Tanggal Berangkat</label>
+                  <input name="tanggalBerangkat" required value={formData.tanggalBerangkat} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md" type="date" />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-label-md text-on-surface-variant">Jumlah Peserta</label>
-                  <input name="jumlahPeserta" required min="1" value={formData.jumlahPeserta} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary" type="number" />
+                  <input name="jumlahPeserta" required min="1" value={formData.jumlahPeserta} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md" type="number" />
                 </div>
 
-                <div className="space-y-1 col-span-2">
+                <div className="space-y-1 sm:col-span-2">
                   <label className="font-label-md text-on-surface-variant">Catatan (Opsional)</label>
-                  <textarea name="catatan" value={formData.catatan} onChange={handleFormChange} className="w-full px-4 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary" rows={2} />
+                  <textarea name="catatan" value={formData.catatan} onChange={handleFormChange} className="w-full px-3 py-2 border border-outline-variant rounded-lg outline-none focus:border-primary text-body-md" rows={2} placeholder="Tambahkan catatan khusus..." />
                 </div>
               </div>
 
-              <div className="p-4 bg-primary-container/10 rounded-xl border border-primary/20 flex justify-between items-center">
+              <div className="p-3 bg-primary-container/10 rounded-lg border border-primary/20 flex justify-between items-center">
                 <span className="font-body-md text-on-surface-variant">Estimasi Total Harga:</span>
                 <span className="font-headline-md text-primary">{formatRp((formData.hargaPerOrang || 0) * (formData.jumlahPeserta || 0))}</span>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <button type="button" className="px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container" onClick={closeModal}>Batal</button>
-                <button type="submit" className="px-8 py-2.5 bg-primary text-on-primary rounded-lg shadow-lg hover:opacity-90 active:scale-95">Simpan</button>
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" className="px-5 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-md transition-colors" onClick={closeModal}>Batal</button>
+                <button type="submit" className="px-6 py-2 bg-primary text-on-primary rounded-lg shadow-md hover:opacity-90 active:scale-95 font-label-md transition-all">Simpan</button>
               </div>
             </form>
           </div>
